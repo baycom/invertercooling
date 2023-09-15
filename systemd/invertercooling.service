@@ -1,0 +1,20 @@
+[Unit]
+Description=GoodWe Inverter Cooling Service
+
+[Service]
+ExecStart=/usr/bin/node /home/user/proj/smarthome/invertercooling/index.js
+# Required on some systems
+WorkingDirectory=/home/user/proj/smarthome/invertercooling
+Restart=always
+ # Restart service after 10 seconds if node service crashes
+ RestartSec=120
+ # Output to syslog
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=invertercooling
+#User=<alternate user>
+#Group=<alternate group>
+#Environment=NODE_ENV=production PORT=1337
+
+[Install]
+WantedBy=multi-user.target
