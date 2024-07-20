@@ -8,7 +8,7 @@ const optionDefinitions = [
 	{ name: 'mqtthost', alias: 'm', type: String, defaultValue: "ehz-gw" },
 	{ name: 'mqttclientid', alias: 'c', type: String, defaultValue: "InverterCooler" },
 	{ name: 'goodweid', alias: 'g', type: String, defaultValue: "9010KETU219W0414" },
-	{ name: 'tasmotahost', alias: 't', type: String, defaultValue: "tasmota-0c232e-0814" },
+	{ name: 'tasmotaid', alias: 't', type: String, defaultValue: "tasmota_0C232E" },
 	{ name: 'ontemp', alias: 'o', type: Number, defaultValue: "40.0" },
 	{ name: 'offtemp', alias: 'f', type: Number, defaultValue: "35.0" },
 	{ name: 'interval', alias: 'i', type: Number, defaultValue: "60" },
@@ -24,16 +24,11 @@ function switchCooler(state) {
 	if(options.debug) {
 		console.log("switchCooler: "+state);
 	}
-	var httpopt = {
-		host: options.tasmotahost,
-		path: '/cm?cmnd=power%20'+(state==1?"on":"off")
-	};
-//	console.log(util.inspect(httpopt));
-	http.request(httpopt, (res) => {
-		if(options.debug) {
-			console.log("done")
+	MQTTclient.publish("cmnd/"+options.tasmotaid+"/POWER", state==1?"on":"off", { qos: 0, retain: false }, (error) => {
+		if (error) {
+			console.error(error)
 		}
-	}).end();
+	});
 }
 
 var MQTTclient = mqtt.connect("mqtt://"+options.mqtthost,{clientId: options.mqttclientid});
